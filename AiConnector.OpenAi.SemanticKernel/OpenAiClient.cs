@@ -1,23 +1,27 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.SemanticKernel;
+﻿using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace AiConnector.OpenAi.SemanticKernel
 {
-    public class OpenAiClient(
-        [FromKeyedServices(OpenAiModelSettings.ConfigurationKey)] Kernel kernel,
-        IChatCompletionService chatCompletionService) : IAiApiClient
+    public class OpenAiClient(IChatCompletionService chatCompletionService, Kernel kernel) : IAiApiClient<ChatHistory>
     {
-        public async Task<string> GetResponse(string prompt)
+        public async Task<string> GetChatCompletion(ChatHistory chatConversation)
         {
-            var result = await kernel.InvokePromptAsync(prompt);
-            return result.GetValue<string>() ?? string.Empty;
-        }
-
-        public async Task<string> GetChatCompletion(string prompt)
-        {
-            var content = await chatCompletionService.GetChatMessageContentAsync(prompt);
-            return content.ToString();
+            try
+            {
+                var content = await chatCompletionService.GetChatMessageContentAsync(
+                    chatHistory: chatConversation,
+                    new PromptExecutionSettings
+                    {
+                        FunctionChoiceBehavior = FunctionChoiceBehavior.Auto()
+                    }, 
+                    kernel);
+                return content.ToString();
+            }
+            catch (Exception ex)
+            {
+                return $"The processing of the message has been failed with this error: {ex.Message}";
+            }
         }
     }
 }

@@ -11,7 +11,7 @@ namespace AiConnector.Ollama.SemanticKernel
         {
             builder.Services.Configure<OllamaModelSettings>(builder.Configuration.GetSection(OllamaModelSettings.ConfigurationKey));
 
-            builder.Services.AddTransient<IAiApiClient, OllamaClient>();
+            builder.Services.AddTransient<IAiApiClient<string[]>, OllamaClient>();
             builder.Services.AddKeyedTransient<Kernel>(OllamaModelSettings.ConfigurationKey, (sp, key) =>
             {
                 var settings = sp.GetRequiredService<IOptions<OllamaModelSettings>>().Value;

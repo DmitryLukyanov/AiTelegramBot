@@ -1,6 +1,4 @@
-﻿using AiConnector.OpenAi.SemanticKernel;
-using Microsoft.KernelMemory.SemanticKernel;
-using Microsoft.SemanticKernel;
+﻿using Microsoft.SemanticKernel;
 
 namespace TelegramBot
 {
@@ -14,11 +12,8 @@ namespace TelegramBot
 
         public static void ConfigureHost(IHost host)
         {
-            var kernel = host.Services.GetRequiredKeyedService<Kernel>(OpenAiModelSettings.ConfigurationKey);
-#pragma warning disable SKEXP0120 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
-            kernel.ImportPluginFromObject<MyCvPlugin>(
-                target: host.Services.GetRequiredService<MyCvPlugin>(),
-                new System.Text.Json.JsonSerializerOptions() { AllowTrailingCommas = true });
+            var kernel = host.Services.GetRequiredService<Kernel>();
+            kernel.Plugins.AddFromType<MyCvPlugin>("MyCv", host.Services);
 #pragma warning restore SKEXP0120 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
         }
     }

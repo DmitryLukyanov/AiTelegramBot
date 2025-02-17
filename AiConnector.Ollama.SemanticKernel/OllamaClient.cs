@@ -3,9 +3,9 @@ using Microsoft.SemanticKernel;
 
 namespace AiConnector.Ollama.SemanticKernel
 {
-    public class OllamaClient([FromKeyedServices(OllamaModelSettings.ConfigurationKey)] Kernel kernel) : IAiApiClient
+    public class OllamaClient([FromKeyedServices(OllamaModelSettings.ConfigurationKey)] Kernel kernel) : IAiApiClient<string[]>
     {
-        public Task<string> GetChatCompletion(string prompt)
+        public Task<string> GetChatCompletion(string[] chatConversation)
         {
             throw new NotImplementedException();
         }

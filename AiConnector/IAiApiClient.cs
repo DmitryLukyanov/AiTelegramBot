@@ -1,8 +1,7 @@
 ﻿namespace AiConnector
 {
-    public interface IAiApiClient
+    public interface IAiApiClient<TConversation>
     {
-        Task<string> GetResponse(string prompt);
-        Task<string> GetChatCompletion(string prompt);
+        Task<string> GetChatCompletion(TConversation chatConversation);
     }
 }

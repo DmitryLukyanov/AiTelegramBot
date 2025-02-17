@@ -6,15 +6,15 @@ using System.ComponentModel;
 namespace TelegramBot
 {
     public sealed class MyCvPlugin(
-        IMemoryClient memoryClient/*,
-        Kernel kernel*/)
+        IMemoryClient memoryClient,
+        Kernel kernel)
     {
         private static readonly MemoryCollection _memoryCollection = new MemoryCollection("myCvMemory");
         private static readonly string _pathToCv = "../Storage/cv.pdf";
 
         private const string FunctionName = "CvProvider";
 
-        // private readonly IPromptTemplateFactory _promptTemplateFactory = new KernelPromptTemplateFactory();
+        private readonly IPromptTemplateFactory _promptTemplateFactory = new KernelPromptTemplateFactory();
 
         public async Task InitializeMyCv()
         {
@@ -34,13 +34,12 @@ namespace TelegramBot
             }
         }
 
-        [KernelFunction(FunctionName), Description("Get information about me from my cv.")]
+        [KernelFunction(FunctionName), Description("Get information about Dmitry Lukyanov's from my cv.")]
         public async Task<string> GetAsync(KernelArguments arguments)
         {
             var prompt = @"Provide all information from the cv";
 
-            var renderedPrompt = prompt;
-                //await _promptTemplateFactory.Create(new PromptTemplateConfig(template: prompt)).RenderAsync(kernel, arguments);
+            var renderedPrompt = await _promptTemplateFactory.Create(new PromptTemplateConfig(template: prompt)).RenderAsync(kernel, arguments);
             var results = await memoryClient.Search(_memoryCollection, renderedPrompt);
             return string.Join('\n', results);
         }
