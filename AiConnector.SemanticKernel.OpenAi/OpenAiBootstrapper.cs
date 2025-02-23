@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.AudioToText;
 using Microsoft.SemanticKernel.ChatCompletion;
 #pragma warning disable SKEXP0010 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 #pragma warning disable SKEXP0001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
@@ -29,6 +30,10 @@ namespace AiConnector.SemanticKernel.OpenAi
             builder.Services.Add(kernelBuilder.Services);
 
             builder.Services.AddSingleton<Kernel>((sr) => kernelBuilder.Build());
+
+            builder.Services.AddOpenAIAudioToText(
+                modelId: settings.AudioModel,
+                apiKey: apiKey);
         }
     }
 }

@@ -7,8 +7,8 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
 public class Worker(
-    ILogger<Worker> logger, 
-    IAiApiClient<ChatHistory> aiApiClient, 
+    ILogger<Worker> logger,
+    IAiApiClient<ChatHistory> aiApiClient,
     TelegramBotClient botClient,
     AiBotInitializer initializer) : BackgroundService
 {
@@ -49,9 +49,19 @@ If the question asks about any details that are not mentioned in his CV, please 
 
     private async Task BotOnMessage(Message message, UpdateType type)
     {
-        if (!string.IsNullOrEmpty(message.Text) && (message.Text.StartsWith("@ai_bot") || (message.Text.Contains("letsthinkaboutbotnameagain_bot"))))
+        // TODO: refactoring
+        var inputTextMessage = message.Text;
+        if (message.Voice != null)
         {
-            _conversation.AddUserMessage(message.Text /*, message.Id.ToString()*/);
+            var file = await botClient.GetFile(message.Voice.FileId!);
+            using var destination = new MemoryStream();
+            await botClient.DownloadFile(file.FilePath!, destination: destination);
+            inputTextMessage = await aiApiClient.GetTextFromAudio(destination!, "en", "The text has been told by captain america");
+        }
+
+        if (!string.IsNullOrEmpty(message.Text) && (inputTextMessage!.StartsWith("@ai_bot") || (inputTextMessage!.Contains("letsthinkaboutbotnameagain_bot"))) || message.Voice != null)
+        {
+            _conversation.AddUserMessage(inputTextMessage! /*, message.Id.ToString()*/);
             var response = await aiApiClient.GetChatCompletion(_conversation);
 
             if (!string.IsNullOrEmpty(response))

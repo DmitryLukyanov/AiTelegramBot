@@ -15,5 +15,10 @@ namespace AiConnector.SemanticKernel.Ollama
             var result = await kernel.InvokePromptAsync(prompt);
             return result.GetValue<string>() ?? string.Empty;
         }
+
+        public Task<string> GetTextFromAudio(MemoryStream voice, string language, string promt)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

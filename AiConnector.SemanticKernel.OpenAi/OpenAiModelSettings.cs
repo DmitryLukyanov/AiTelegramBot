@@ -7,5 +7,6 @@
         public required string ModelName { get; set; }
         public required string ApiKey { get; set; }
         public required string EmbeddingModel { get; set; }
+        public required string AudioModel { get; set; }
     }
 }
