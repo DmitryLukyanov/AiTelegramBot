@@ -7,7 +7,7 @@ using Microsoft.SemanticKernel.ChatCompletion;
 #pragma warning disable SKEXP0010 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 #pragma warning disable SKEXP0001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 
-namespace AiConnector.OpenAi.SemanticKernel
+namespace AiConnector.SemanticKernel.OpenAi
 {
     public static class OpenAiBootstrapper
     {
@@ -18,13 +18,14 @@ namespace AiConnector.OpenAi.SemanticKernel
             builder.Services.Configure<OpenAiModelSettings>(builder.Configuration.GetSection(OpenAiModelSettings.ConfigurationKey));
             var openAiSection = builder.Configuration.GetSection(OpenAiModelSettings.ConfigurationKey);
             var settings = openAiSection.Get<OpenAiModelSettings>()!;
-            var apiKey = settings.ApiKey ?? Environment.GetEnvironmentVariable("OPENAI_API_KEY") ?? throw new InvalidOperationException("OPENAI_API_KEY must be configured");
+
+            var apiKey = settings.ApiKey ?? 
+                Environment.GetEnvironmentVariable("OPENAI_API_KEY") ?? throw new InvalidOperationException("OPENAI_API_KEY must be configured");
 
             var kernelBuilder = Kernel.CreateBuilder();
             kernelBuilder
                 .AddOpenAIChatCompletion(settings.ModelName, apiKey)
                 .AddOpenAITextEmbeddingGeneration(settings.EmbeddingModel, apiKey);
-            // kernelBuilder.Services.Add(builder.Services);
             builder.Services.Add(kernelBuilder.Services);
 
             builder.Services.AddSingleton<Kernel>((sr) => kernelBuilder.Build());

@@ -1,7 +1,7 @@
 ﻿using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 
-namespace AiConnector.OpenAi.SemanticKernel
+namespace AiConnector.SemanticKernel.OpenAi
 {
     public class OpenAiClient(IChatCompletionService chatCompletionService, Kernel kernel) : IAiApiClient<ChatHistory>
     {

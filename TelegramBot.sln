@@ -7,10 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelegramBot", "TelegramBot\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AiConnector", "AiConnector\AiConnector.csproj", "{A45460D1-CF0C-4EB4-9C87-65326ED03C8D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AiConnector.Ollama.SemanticKernel", "AiConnector.Ollama.SemanticKernel\AiConnector.Ollama.SemanticKernel.csproj", "{89412227-1F0F-4C24-BE1A-1F4E0462DC1D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AiConnector.OpenAi.SemanticKernel", "AiConnector.OpenAi.SemanticKernel\AiConnector.OpenAi.SemanticKernel.csproj", "{E12FA67B-B370-44CD-833C-729A6E630885}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AiConnector.SemanticKernel.ChromaDb", "AiConnector.SemanticKernel.ChromaDb\AiConnector.SemanticKernel.ChromaDb.csproj", "{D5354925-CF80-49C0-BB65-34BC3A7FB18A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OpenAi", "OpenAi", "{6DC21512-0747-4DB8-9047-82B7F5B5DBE3}"
@@ -19,10 +15,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ollama", "Ollama", "{2DADA2
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Memory", "Memory", "{98101CE4-08F8-4410-B4CC-E7D3EFE99886}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Storage", "Storage", "{F270BED3-83FF-44C9-9F0A-D5FD6A9E085C}"
-	ProjectSection(SolutionItems) = preProject
-		Storage\cv.pdf = Storage\cv.pdf
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AiConnector.SemanticKernel.Ollama", "AiConnector.SemanticKernel.Ollama\AiConnector.SemanticKernel.Ollama.csproj", "{97C52065-458E-457B-8F22-FE7E1E41D52F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AiConnector.SemanticKernel.OpenAi", "AiConnector.SemanticKernel.OpenAi\AiConnector.SemanticKernel.OpenAi.csproj", "{68964EBE-5D22-4D97-A7EB-159B1EA450BC}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{0537A432-D255-47DA-8057-85C9D2DFADF7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,25 +35,29 @@ Global
 		{A45460D1-CF0C-4EB4-9C87-65326ED03C8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A45460D1-CF0C-4EB4-9C87-65326ED03C8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A45460D1-CF0C-4EB4-9C87-65326ED03C8D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{89412227-1F0F-4C24-BE1A-1F4E0462DC1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{89412227-1F0F-4C24-BE1A-1F4E0462DC1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{89412227-1F0F-4C24-BE1A-1F4E0462DC1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{89412227-1F0F-4C24-BE1A-1F4E0462DC1D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E12FA67B-B370-44CD-833C-729A6E630885}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E12FA67B-B370-44CD-833C-729A6E630885}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E12FA67B-B370-44CD-833C-729A6E630885}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E12FA67B-B370-44CD-833C-729A6E630885}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D5354925-CF80-49C0-BB65-34BC3A7FB18A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D5354925-CF80-49C0-BB65-34BC3A7FB18A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D5354925-CF80-49C0-BB65-34BC3A7FB18A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D5354925-CF80-49C0-BB65-34BC3A7FB18A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97C52065-458E-457B-8F22-FE7E1E41D52F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97C52065-458E-457B-8F22-FE7E1E41D52F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97C52065-458E-457B-8F22-FE7E1E41D52F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97C52065-458E-457B-8F22-FE7E1E41D52F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68964EBE-5D22-4D97-A7EB-159B1EA450BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68964EBE-5D22-4D97-A7EB-159B1EA450BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68964EBE-5D22-4D97-A7EB-159B1EA450BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68964EBE-5D22-4D97-A7EB-159B1EA450BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0537A432-D255-47DA-8057-85C9D2DFADF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0537A432-D255-47DA-8057-85C9D2DFADF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0537A432-D255-47DA-8057-85C9D2DFADF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0537A432-D255-47DA-8057-85C9D2DFADF7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{89412227-1F0F-4C24-BE1A-1F4E0462DC1D} = {2DADA2FA-466B-48FA-8E36-9F73BC017775}
-		{E12FA67B-B370-44CD-833C-729A6E630885} = {6DC21512-0747-4DB8-9047-82B7F5B5DBE3}
 		{D5354925-CF80-49C0-BB65-34BC3A7FB18A} = {98101CE4-08F8-4410-B4CC-E7D3EFE99886}
+		{97C52065-458E-457B-8F22-FE7E1E41D52F} = {2DADA2FA-466B-48FA-8E36-9F73BC017775}
+		{68964EBE-5D22-4D97-A7EB-159B1EA450BC} = {6DC21512-0747-4DB8-9047-82B7F5B5DBE3}
 	EndGlobalSection
 EndGlobal

@@ -1,4 +1,4 @@
-﻿namespace AiConnector.Ollama.SemanticKernel
+﻿namespace AiConnector.SemanticKernel.Ollama
 {
     public class OllamaModelSettings
     {

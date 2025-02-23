@@ -10,7 +10,7 @@ namespace TelegramBot
         Kernel kernel)
     {
         private static readonly MemoryCollection _memoryCollection = new MemoryCollection("myCvMemory");
-        private static readonly string _pathToCv = "../Storage/cv.pdf";
+        private static readonly string _pathToCv = "./Storage/cv.pdf";
 
         private const string FunctionName = "CvProvider";
 

@@ -1,4 +1,4 @@
-﻿namespace AiConnector.OpenAi.SemanticKernel
+﻿namespace AiConnector.SemanticKernel.OpenAi
 {
     public class OpenAiModelSettings
     {
