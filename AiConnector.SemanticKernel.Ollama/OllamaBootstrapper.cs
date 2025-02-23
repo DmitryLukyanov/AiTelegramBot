@@ -3,7 +3,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.SemanticKernel;
 
-namespace AiConnector.Ollama.SemanticKernel
+namespace AiConnector.SemanticKernel.Ollama
 {
     public static class OllamaBootstrapper
     {

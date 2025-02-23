@@ -1,4 +1,4 @@
-using AiConnector.OpenAi.SemanticKernel;
+using AiConnector.SemanticKernel.OpenAi;
 using AiConnector.SemanticKernel.ChromaDb;
 using Telegram.Bot;
 using TelegramBot;

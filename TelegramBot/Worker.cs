@@ -12,7 +12,7 @@ public class Worker(
     TelegramBotClient botClient,
     AiBotInitializer initializer) : BackgroundService
 {
-    private readonly ChatHistory _conversation = new();
+    private readonly ChatHistory _conversation = [];
 
     public override void Dispose()
     {

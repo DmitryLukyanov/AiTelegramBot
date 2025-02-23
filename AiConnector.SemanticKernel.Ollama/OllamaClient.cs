@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 
-namespace AiConnector.Ollama.SemanticKernel
+namespace AiConnector.SemanticKernel.Ollama
 {
     public class OllamaClient([FromKeyedServices(OllamaModelSettings.ConfigurationKey)] Kernel kernel) : IAiApiClient<string[]>
     {
