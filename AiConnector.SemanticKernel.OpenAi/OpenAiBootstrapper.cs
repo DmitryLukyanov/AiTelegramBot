@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.AudioToText;
 using Microsoft.SemanticKernel.ChatCompletion;
@@ -15,8 +16,8 @@ namespace AiConnector.SemanticKernel.OpenAi
         public static void ConfigureModel(HostApplicationBuilder builder)
         {
             builder.Services.AddSingleton<IAiApiClient<ChatHistory>, OpenAiClient>();
-
             builder.Services.Configure<OpenAiModelSettings>(builder.Configuration.GetSection(OpenAiModelSettings.ConfigurationKey));
+
             var openAiSection = builder.Configuration.GetSection(OpenAiModelSettings.ConfigurationKey);
             var settings = openAiSection.Get<OpenAiModelSettings>()!;
 
@@ -26,14 +27,18 @@ namespace AiConnector.SemanticKernel.OpenAi
             var kernelBuilder = Kernel.CreateBuilder();
             kernelBuilder
                 .AddOpenAIChatCompletion(settings.ModelName, apiKey)
-                .AddOpenAITextEmbeddingGeneration(settings.EmbeddingModel, apiKey);
+                .AddOpenAITextEmbeddingGeneration(settings.EmbeddingModel, apiKey)
+                .AddOpenAIAudioToText(modelId: settings.AudioModel, apiKey: apiKey);
+
+            kernelBuilder.Services.AddLogging(logging =>
+            {
+                logging.AddConsole();
+                logging.SetMinimumLevel(LogLevel.Debug);
+            });
+
             builder.Services.Add(kernelBuilder.Services);
 
             builder.Services.AddSingleton<Kernel>((sr) => kernelBuilder.Build());
-
-            builder.Services.AddOpenAIAudioToText(
-                modelId: settings.AudioModel,
-                apiKey: apiKey);
         }
     }
 }
