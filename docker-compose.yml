@@ -6,7 +6,7 @@ networks:
 
 services:
 
-  chroma_server:
+  chroma:
     image: chromadb/chroma:latest
     volumes:
       # Be aware that indexed data are located in "/chroma/chroma/"
@@ -31,12 +31,12 @@ services:
       context: .
       dockerfile: TelegramBot/Dockerfile
     depends_on:
-      chroma_server:
+      chroma:
         condition: service_healthy
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - TELEGRAM_BOT_API_KEY=${TELEGRAM_BOT_API_KEY}
-      - CHROMA_ENDPOINT=http://chroma_server:8000
+      - CHROMA_ENDPOINT=http://chroma:8000
     networks:
       - net 
 
