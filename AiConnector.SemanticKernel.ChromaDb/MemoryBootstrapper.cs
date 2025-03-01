@@ -25,7 +25,7 @@ namespace AiConnector.SemanticKernel.ChromaDb
             {
                 builder.AddDebug();
                 builder.AddConsole();
-                builder.SetMinimumLevel(LogLevel.Debug);
+                builder.SetMinimumLevel(LogLevel.Trace);
             });
             builder.Services.AddSingleton(sr => 
             {
