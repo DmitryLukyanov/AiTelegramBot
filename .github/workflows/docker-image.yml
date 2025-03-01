@@ -1,0 +1,32 @@
+name: Integration tests!
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Prepare Telegram Image
+      working-directory: .
+      run: |
+        docker build -t telegrambot -f TelegramBot/Dockerfile  . 
+
+    - name: Containerized tests
+      env:
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        TELEGRAM_BOT_API_KEY: ${{ secrets.TELEGRAM_BOT_API_KEY }}
+      run: |
+        ls -R
+        docker compose -f docker-compose.yml  up --exit-code-from telegrambot.tests
+
+    - name: Tear down services
+      if: always()  # ensures this runs even if previous steps fail
+      run: docker compose down

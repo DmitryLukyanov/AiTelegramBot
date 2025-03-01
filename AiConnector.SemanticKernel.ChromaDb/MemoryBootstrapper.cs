@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.SemanticKernel.Connectors.Chroma;
 using Microsoft.SemanticKernel.Embeddings;
@@ -20,10 +21,16 @@ namespace AiConnector.SemanticKernel.ChromaDb
                 return new MemoryClient(chromaClient, embedding);
             });
 
+            ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddDebug();
+                builder.AddConsole();
+                builder.SetMinimumLevel(LogLevel.Trace);
+            });
             builder.Services.AddSingleton(sr => 
             {
                 var settings = sr.GetRequiredService<IOptions<MemorySettings>>().Value;
-                return new ChromaClient(settings.Endpoint);
+                return new ChromaClient(settings.Endpoint, loggerFactory: loggerFactory);
             });
         }
     }

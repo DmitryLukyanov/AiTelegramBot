@@ -19,6 +19,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AiConnector.SemanticKernel.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AiConnector.SemanticKernel.OpenAi", "AiConnector.SemanticKernel.OpenAi\AiConnector.SemanticKernel.OpenAi.csproj", "{68964EBE-5D22-4D97-A7EB-159B1EA450BC}"
 EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{0537A432-D255-47DA-8057-85C9D2DFADF7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CICD", "CICD", "{7E8D1A4B-B2A7-47FF-A2ED-622B9D0FEE17}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\docker-image.yml = .github\workflows\docker-image.yml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelegramBot.Tests", "TelegramBot.Tests\TelegramBot.Tests.csproj", "{C640194D-126D-433A-97C9-F768A3B320F6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +54,14 @@ Global
 		{68964EBE-5D22-4D97-A7EB-159B1EA450BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{68964EBE-5D22-4D97-A7EB-159B1EA450BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{68964EBE-5D22-4D97-A7EB-159B1EA450BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0537A432-D255-47DA-8057-85C9D2DFADF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0537A432-D255-47DA-8057-85C9D2DFADF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0537A432-D255-47DA-8057-85C9D2DFADF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0537A432-D255-47DA-8057-85C9D2DFADF7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C640194D-126D-433A-97C9-F768A3B320F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C640194D-126D-433A-97C9-F768A3B320F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C640194D-126D-433A-97C9-F768A3B320F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C640194D-126D-433A-97C9-F768A3B320F6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

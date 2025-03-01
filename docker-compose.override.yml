@@ -1,0 +1,4 @@
+services:
+  telegrambot:
+    environment:
+      - DOTNET_ENVIRONMENT=Development

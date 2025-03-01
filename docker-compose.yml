@@ -1,0 +1,53 @@
+version: '3.9'
+
+networks:
+  net:
+    driver: bridge
+
+services:
+
+  chroma:
+    image: chromadb/chroma:0.6.4.dev226
+    volumes:
+      - chroma-data:/chroma/chroma
+    restart: unless-stopped # possible values are: "no", always", "on-failure", "unless-stopped"
+    ports:
+      - "8000:8000"
+    healthcheck:
+      # Adjust below to match your container port
+      test: [ "CMD", "/bin/bash", "-c", "cat < /dev/null > /dev/tcp/localhost/8000" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - net
+
+  telegrambot:
+    image: ${DOCKER_REGISTRY-}telegrambot
+    build:
+      context: .
+      dockerfile: TelegramBot/Dockerfile
+    depends_on:
+      chroma:
+        condition: service_healthy
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - TELEGRAM_BOT_API_KEY=${TELEGRAM_BOT_API_KEY}
+      - CHROMA_ENDPOINT=http://chroma:8000
+    networks:
+      - net
+
+  telegrambot.tests:
+    image: ${DOCKER_REGISTRY-}telegrambottests
+    build:
+      context: .
+      dockerfile: TelegramBot.Tests/Dockerfile
+    depends_on:
+      chroma:
+        condition: service_healthy
+    networks:
+      - net
+
+volumes:
+  chroma-data:
+    driver: local
