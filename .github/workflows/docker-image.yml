@@ -24,7 +24,6 @@ jobs:
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         TELEGRAM_BOT_API_KEY: ${{ secrets.TELEGRAM_BOT_API_KEY }}
       run: |
-        ls -R
         docker compose -f docker-compose.yml  up --exit-code-from telegrambot.tests
 
     - name: Tear down services
