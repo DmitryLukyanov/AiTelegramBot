@@ -13,7 +13,7 @@ namespace AiConnector.SemanticKernel.OpenAi
 {
     public static class OpenAiBootstrapper
     {
-        public static void ConfigureModel(HostApplicationBuilder builder)
+        public static void ConfigureModel(IHostApplicationBuilder builder)
         {
             builder.Services.AddSingleton<IAiApiClient<ChatHistory>, OpenAiClient>();
             builder.Services.Configure<OpenAiModelSettings>(builder.Configuration.GetSection(OpenAiModelSettings.ConfigurationKey));

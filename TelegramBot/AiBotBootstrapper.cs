@@ -4,7 +4,7 @@ namespace TelegramBot
 {
     internal static class AiBotbootStrapper
     {
-        public static void Configure(HostApplicationBuilder builder)
+        public static void Configure(IHostApplicationBuilder builder)
         {
             builder.Services.AddLogging(logging =>
             {
@@ -27,7 +27,7 @@ namespace TelegramBot
     {
         public async Task Initialize()
         {
-            // await myCvPlugin.InitializeMyCv();
+            await myCvPlugin.InitializeMyCv();
         }
     }
 }

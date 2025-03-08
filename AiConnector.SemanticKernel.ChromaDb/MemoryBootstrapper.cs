@@ -11,7 +11,7 @@ namespace AiConnector.SemanticKernel.ChromaDb
 {
     public static class MemoryBootstrapper
     {
-        public static void Configure(HostApplicationBuilder builder)
+        public static void Configure(IHostApplicationBuilder builder)
         {
             builder.Services.Configure<MemorySettings>(builder.Configuration.GetSection(MemorySettings.ConfigurationKey));
             builder.Services.AddSingleton<IMemoryClient, MemoryClient>(sr => 

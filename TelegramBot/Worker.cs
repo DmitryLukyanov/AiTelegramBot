@@ -8,10 +8,9 @@ using Telegram.Bot.Types.Enums;
 
 public class Worker(
     ILogger<Worker> logger,
-    //IAiApiClient<ChatHistory> aiApiClient,
-    TelegramBotClient botClient//,
-    //AiBotInitializer initializer
-    ) : BackgroundService
+    IAiApiClient<ChatHistory> aiApiClient,
+    TelegramBotClient botClient,
+    AiBotInitializer initializer) : BackgroundService
 {
     private readonly ChatHistory _conversation = [];
 
@@ -37,12 +36,11 @@ If the question asks about any details that are not mentioned in his CV, please 
         botClient.OnMessage += BotOnMessage;
         logger.LogInformation("Telegram Bot started.");
 
-        //await initializer.Initialize();
+        await initializer.Initialize();
 
         while (!stoppingToken.IsCancellationRequested)
         {
             logger.LogInformation("Worker running at: {time}", DateTimeOffset.UtcNow);
-            Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!! 2 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
         }
 
@@ -55,17 +53,16 @@ If the question asks about any details that are not mentioned in his CV, please 
         var inputTextMessage = message.Text;
         if (message.Voice != null)
         {
-            //var file = await botClient.GetFile(message.Voice.FileId!);
-            //using var destination = new MemoryStream();
-            //await botClient.DownloadFile(file.FilePath!, destination: destination);
-            //inputTextMessage = await aiApiClient.GetTextFromAudio(destination!, "en", "The text has been told by captain america");
+            var file = await botClient.GetFile(message.Voice.FileId!);
+            using var destination = new MemoryStream();
+            await botClient.DownloadFile(file.FilePath!, destination: destination);
+            inputTextMessage = await aiApiClient.GetTextFromAudio(destination!, "en", "The text has been told by captain america");
         }
 
         if (!string.IsNullOrEmpty(message.Text) && (inputTextMessage!.StartsWith("@ai_bot") || (inputTextMessage!.Contains("letsthinkaboutbotnameagain_bot"))) || message.Voice != null)
         {
-            //_conversation.AddUserMessage(inputTextMessage! /*, message.Id.ToString()*/);
-            //var response = await aiApiClient.GetChatCompletion(_conversation);
-            var response = "test result";
+            _conversation.AddUserMessage(inputTextMessage! /*, message.Id.ToString()*/);
+            var response = await aiApiClient.GetChatCompletion(_conversation);
 
             if (!string.IsNullOrEmpty(response))
             {
