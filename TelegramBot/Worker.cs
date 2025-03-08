@@ -42,6 +42,7 @@ If the question asks about any details that are not mentioned in his CV, please 
         while (!stoppingToken.IsCancellationRequested)
         {
             logger.LogInformation("Worker running at: {time}", DateTimeOffset.UtcNow);
+            Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!! 2 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
         }
 

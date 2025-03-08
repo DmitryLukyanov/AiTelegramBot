@@ -2,7 +2,7 @@ using AiConnector.SemanticKernel.OpenAi;
 using AiConnector.SemanticKernel.ChromaDb;
 using Telegram.Bot;
 using TelegramBot;
-
+Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!! 1");
 var builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddHostedService<Worker>();
 builder.Services.AddSingleton((sp) => 
