@@ -6,6 +6,11 @@ namespace TelegramBot
     {
         public static void Configure(HostApplicationBuilder builder)
         {
+            builder.Services.AddLogging(logging =>
+            {
+                logging.AddConsole();
+                logging.SetMinimumLevel(LogLevel.Debug);
+            });
             builder.Services.AddSingleton<MyCvPlugin>();
             builder.Services.AddSingleton<AiBotInitializer>();
         }
@@ -22,7 +27,7 @@ namespace TelegramBot
     {
         public async Task Initialize()
         {
-            await myCvPlugin.InitializeMyCv();
+            // await myCvPlugin.InitializeMyCv();
         }
     }
 }

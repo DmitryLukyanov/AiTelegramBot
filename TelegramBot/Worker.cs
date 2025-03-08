@@ -53,16 +53,17 @@ If the question asks about any details that are not mentioned in his CV, please 
         var inputTextMessage = message.Text;
         if (message.Voice != null)
         {
-            var file = await botClient.GetFile(message.Voice.FileId!);
-            using var destination = new MemoryStream();
-            await botClient.DownloadFile(file.FilePath!, destination: destination);
-            inputTextMessage = await aiApiClient.GetTextFromAudio(destination!, "en", "The text has been told by captain america");
+            //var file = await botClient.GetFile(message.Voice.FileId!);
+            //using var destination = new MemoryStream();
+            //await botClient.DownloadFile(file.FilePath!, destination: destination);
+            //inputTextMessage = await aiApiClient.GetTextFromAudio(destination!, "en", "The text has been told by captain america");
         }
 
         if (!string.IsNullOrEmpty(message.Text) && (inputTextMessage!.StartsWith("@ai_bot") || (inputTextMessage!.Contains("letsthinkaboutbotnameagain_bot"))) || message.Voice != null)
         {
-            _conversation.AddUserMessage(inputTextMessage! /*, message.Id.ToString()*/);
-            var response = await aiApiClient.GetChatCompletion(_conversation);
+            //_conversation.AddUserMessage(inputTextMessage! /*, message.Id.ToString()*/);
+            //var response = await aiApiClient.GetChatCompletion(_conversation);
+            var response = "test result";
 
             if (!string.IsNullOrEmpty(response))
             {
