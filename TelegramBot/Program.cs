@@ -11,10 +11,10 @@ builder.Services.AddSingleton((sp) =>
     return new TelegramBotClient(telegramBotToken);
 });
 
-OpenAiBootstrapper.ConfigureModel(builder);
-MemoryBootstrapper.Configure(builder);
-AiBotbootStrapper.Configure(builder);
+//OpenAiBootstrapper.ConfigureModel(builder);
+//MemoryBootstrapper.Configure(builder);
+//AiBotbootStrapper.Configure(builder);
 
 var host = builder.Build();
-AiBotbootStrapper.ConfigureHost(host);
+//AiBotbootStrapper.ConfigureHost(host);
 host.Run();

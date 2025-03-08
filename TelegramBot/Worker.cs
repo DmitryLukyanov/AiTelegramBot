@@ -8,9 +8,10 @@ using Telegram.Bot.Types.Enums;
 
 public class Worker(
     ILogger<Worker> logger,
-    IAiApiClient<ChatHistory> aiApiClient,
-    TelegramBotClient botClient,
-    AiBotInitializer initializer) : BackgroundService
+    //IAiApiClient<ChatHistory> aiApiClient,
+    TelegramBotClient botClient//,
+    //AiBotInitializer initializer
+    ) : BackgroundService
 {
     private readonly ChatHistory _conversation = [];
 
@@ -36,7 +37,7 @@ If the question asks about any details that are not mentioned in his CV, please 
         botClient.OnMessage += BotOnMessage;
         logger.LogInformation("Telegram Bot started.");
 
-        await initializer.Initialize();
+        //await initializer.Initialize();
 
         while (!stoppingToken.IsCancellationRequested)
         {
