@@ -41,6 +41,7 @@ If the question asks about any details that are not mentioned in his CV, please 
         while (!stoppingToken.IsCancellationRequested)
         {
             logger.LogInformation("Worker running at: {time}", DateTimeOffset.UtcNow);
+            logger.LogWarning("Worker running at: {time}!", DateTimeOffset.UtcNow);
             await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
         }
 
@@ -69,8 +70,7 @@ If the question asks about any details that are not mentioned in his CV, please 
                 _conversation.AddAssistantMessage(response);
                 await botClient.SendMessage(
                     chatId: message.Chat.Id,
-                    text: response
-                );
+                    text: response);
             }
         }
     }

@@ -1,11 +1,26 @@
 using AiConnector.SemanticKernel.ChromaDb;
 using AiConnector.SemanticKernel.OpenAi;
+using Microsoft.Extensions.Logging.AzureAppServices;
 using Telegram.Bot;
 using TelegramBot;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+builder.Logging.AddAzureWebAppDiagnostics();
+builder.Services.Configure<AzureFileLoggerOptions>(options =>
+{
+    options.FileName = "azure-diagnostics-";
+    options.FileSizeLimit = 50 * 1024;
+    options.RetainedFileCountLimit = 5;
+});
+builder.Services.Configure<AzureBlobLoggerOptions>(options =>
+{
+    options.BlobName = "log.txt";
+});
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
 builder.Services.AddControllers();
+builder.Services.AddLogging();
 builder.Services.AddHealthChecks();
 builder.Services.AddHostedService<Worker>();
 builder.Services.AddSingleton((sp) =>
