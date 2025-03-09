@@ -11,13 +11,9 @@ services:
     build:
       context: .
       dockerfile: TelegramBot/Dockerfile
-    depends_on:
-      chroma:
-        condition: service_healthy
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - TELEGRAM_BOT_API_KEY=${TELEGRAM_BOT_API_KEY}
-      - CHROMA_ENDPOINT=http://chroma:8000
     networks:
       - net
 
@@ -31,7 +27,3 @@ services:
         condition: service_healthy
     networks:
       - net
-
-volumes:
-  chroma-data:
-    driver: local
