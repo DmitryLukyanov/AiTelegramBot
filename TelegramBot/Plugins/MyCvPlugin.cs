@@ -1,4 +1,4 @@
-﻿using AiConnector.SemanticKernel.ChromaDb;
+﻿using AiConnector.SemanticKernel.MongoDb;
 using Microsoft.KernelMemory.DataFormats.Pdf;
 using Microsoft.SemanticKernel;
 using System.ComponentModel;
@@ -11,7 +11,7 @@ namespace TelegramBot
         ILogger<MyCvPlugin> logger)
     {
         private const string FunctionName = "CvProvider";
-        private readonly MemoryCollection _memoryCollection = new("myCvMemory");
+        private readonly MemoryCollection _memoryCollection = new("embedding", "myCvMemory");
         private readonly string _pathToCv = "./Storage/cv.pdf";
         private readonly IPromptTemplateFactory _promptTemplateFactory = new KernelPromptTemplateFactory();
         private readonly Guid _pluginId = Guid.NewGuid();

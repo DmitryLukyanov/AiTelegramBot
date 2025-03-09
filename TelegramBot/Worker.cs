@@ -61,6 +61,7 @@ If the question asks about any details that are not mentioned in his CV, please 
         var inputTextMessage = message.Text;
         if (message.Voice != null)
         {
+            await botClient.SendChatAction(message.Chat.Id, ChatAction.UploadVoice);
             var file = await botClient.GetFile(message.Voice.FileId!);
             using var destination = new MemoryStream();
             await botClient.DownloadFile(file.FilePath!, destination: destination);
@@ -73,7 +74,26 @@ If the question asks about any details that are not mentioned in his CV, please 
             string response;
             try
             {
-                response = await aiApiClient.GetChatCompletion(_conversation);
+                TimeSpan llmTimeout = TimeSpan.FromSeconds(30);
+                Task<string> actionTask;
+                Task delayTask;
+                var resultTask = Task.WhenAny(
+                    (actionTask = aiApiClient.GetChatCompletion(_conversation)),
+                    (delayTask = Task.Delay(llmTimeout)));
+                while (!resultTask.IsCompleted)
+                {
+                    await botClient.SendChatAction(message.Chat.Id, ChatAction.Typing);
+                    await Task.Delay(TimeSpan.FromSeconds(1));
+                }
+
+                if (resultTask.Result == actionTask)
+                {
+                    response = actionTask.Result;
+                }
+                else
+                {
+                    response = $"LLM response exceed timeout {llmTimeout}";
+                }
             }
             catch (Exception ex)
             {
