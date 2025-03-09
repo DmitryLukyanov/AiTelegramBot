@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using AiConnector.SemanticKernel.Mongodb.History;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -20,6 +21,7 @@ namespace AiConnector.SemanticKernel.MongoDb
                 var embedding = sr.GetRequiredService<ITextEmbeddingGenerationService>();
                 return new MemoryClient(mongoClient, embedding);
             });
+            builder.Services.AddSingleton<HistoryHelper>();
 
             ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
             {

@@ -1,20 +1,22 @@
 namespace TelegramBot;
 
 using AiConnector;
+using AiConnector.SemanticKernel.Mongodb.History;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
 public class Worker(
-    // TODO: use scopes?
     ILogger<Worker> logger,
     IAiApiClient<ChatHistory> aiApiClient,
     TelegramBotClient botClient,
-    AiBotInitializer initializer) : BackgroundService
+    AiBotInitializer initializer,
+    HistoryHelper historyHelper) : BackgroundService
 {
     private readonly ChatHistory _conversation = [];
     private readonly Guid _workerId = Guid.NewGuid();
+    private readonly string[] _botNames = ["letsthinkaboutbotnameagain_bot", "ai_bot"];
 
     public override void Dispose()
     {
@@ -57,7 +59,6 @@ If the question asks about any details that are not mentioned in his CV, please 
     {
         LogInformation($"Handling message: {message.Text}. Message Id: {message.Id}. Message type: {type}");
 
-        // TODO: refactoring
         var inputTextMessage = message.Text;
         if (message.Voice != null)
         {
@@ -67,8 +68,12 @@ If the question asks about any details that are not mentioned in his CV, please 
             await botClient.DownloadFile(file.FilePath!, destination: destination);
             inputTextMessage = await aiApiClient.GetTextFromAudio(destination!, "en", "The text has been told by captain america");
         }
+        var botInvolved = !string.IsNullOrEmpty(message.Text) && _botNames.Any(i => inputTextMessage!.StartsWith(i));
+        // TODO: save message id
+        await SaveHistory(message.Chat.Username!, inputTextMessage!, message.Date, botInvolved);
 
-        if (!string.IsNullOrEmpty(message.Text) && (inputTextMessage!.StartsWith("@ai_bot") || (inputTextMessage!.Contains("letsthinkaboutbotnameagain_bot"))) || message.Voice != null)
+
+        if (botInvolved || message.Voice != null)
         {
             _conversation.AddUserMessage(inputTextMessage! /*, message.Id.ToString()*/);
             string response;
@@ -109,10 +114,24 @@ If the question asks about any details that are not mentioned in his CV, please 
                     chatId: message.Chat.Id,
                     text: response);
                 LogInformation($"Sent message to client: {message.Text}. Message Id: {message.Id}. Message type: {type}");
+                await SaveHistory("bot", response, DateTime.UtcNow, botInvolved: true);
             }
         }
 
         LogInformation($"Handled message: {message.Text}. Message Id: {message.Id}. Message type: {type}");
+
+        async Task SaveHistory(string userName, string text, DateTime date, bool botInvolved)
+        {
+            try
+            {
+                await historyHelper.SaveHistory(userName, text, date, botInvolved);
+            }
+            catch (Exception ex)
+            {
+                LogError(ex, ex.Message);
+                throw;
+            }
+        }
     }
 
     private void LogInformation(string message) => logger.LogInformation("Worker Id: {0}. {1}", _workerId, message);
