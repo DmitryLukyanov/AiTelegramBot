@@ -29,14 +29,16 @@ namespace TelegramBot
 
             try
             {
-                await memoryClient.CreateCollection(_memoryCollection.CollectionName);
-#pragma warning disable KMEXP00 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
-                PdfDecoder decoder = new();
-#pragma warning restore KMEXP00 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
-                var content = await decoder.DecodeAsync(_pathToCv);
-                foreach (var section in content.Sections)
+                if (!await memoryClient.TryInitializeCollection(_memoryCollection.CollectionName, _pathToCv))
                 {
-                    await memoryClient.Save(_memoryCollection, section.Content, $"{_pathToCv}_{Guid.NewGuid()}" /*TODO:*/);
+#pragma warning disable KMEXP00 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+                    PdfDecoder decoder = new();
+#pragma warning restore KMEXP00 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+                    var content = await decoder.DecodeAsync(_pathToCv);
+                    foreach (var section in content.Sections)
+                    {
+                        await memoryClient.Save(_memoryCollection, section.Content, $"{_pathToCv}_{Guid.NewGuid()}" /*TODO:*/);
+                    }
                 }
             }
             catch (Exception ex)

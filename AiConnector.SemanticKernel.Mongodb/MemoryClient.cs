@@ -9,7 +9,7 @@ namespace AiConnector.SemanticKernel.MongoDb
 {
     public interface IMemoryClient
     {
-        Task<MemoryCollection> CreateCollection(string collectionName, CancellationToken cancellationToken = default);
+        Task<bool> TryInitializeCollection(string collectionName, string path, CancellationToken cancellationToken = default);
         Task Save(MemoryCollection collection, string text, string id, string? description = null, string? metadata = null, CancellationToken cancellationToken = default);
         Task<string[]> Search(MemoryCollection collection, string query, int limit = 1, double minRelevanceScore = 0, CancellationToken cancellationToken = default);
     }
@@ -18,10 +18,30 @@ namespace AiConnector.SemanticKernel.MongoDb
     {
         private const string EmbeddingDatabase = "embedding";
 
-        public async Task<MemoryCollection> CreateCollection(string collectionName, CancellationToken cancellationToken = default)
+        /*
+ {
+    "mappings": {
+        "dynamic": true,
+        "fields": {
+            "embedding": {
+                "dimensions": 1536,
+                "similarity": "dotProduct",
+                "type": "knnVector"
+            }
+        }
+    }
+}
+         */
+        public async Task<bool> TryInitializeCollection(string collectionName, string path, CancellationToken cancellationToken = default)
         {
-            await memoryClient.GetDatabase(EmbeddingDatabase).CreateCollectionAsync(collectionName, cancellationToken: cancellationToken);
-            return new MemoryCollection(collectionName, EmbeddingDatabase);
+            var database = memoryClient.GetDatabase(EmbeddingDatabase);
+            var collectionsList = await (await database.ListCollectionNamesAsync(cancellationToken: cancellationToken)).ToListAsync(cancellationToken: cancellationToken);
+            if (collectionsList.Contains(collectionName, StringComparer.OrdinalIgnoreCase))
+            {
+                return (await database.GetCollection<BsonDocument>(collectionName).FindAsync($@"{{ _id: {{ $regex: '^{path}' }} }}")).FirstOrDefault() != null;
+            }
+            await database.CreateCollectionAsync(collectionName, cancellationToken: cancellationToken);
+            return false;
         }
 
         public async Task Save(MemoryCollection collection, string text, string id, string? description, string? metadata, CancellationToken cancellationToken = default)
