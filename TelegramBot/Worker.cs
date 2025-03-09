@@ -7,15 +7,19 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
 public class Worker(
+    // TODO: use scopes?
     ILogger<Worker> logger,
     IAiApiClient<ChatHistory> aiApiClient,
     TelegramBotClient botClient,
     AiBotInitializer initializer) : BackgroundService
 {
     private readonly ChatHistory _conversation = [];
+    private readonly Guid _workerId = Guid.NewGuid();
 
     public override void Dispose()
     {
+        LogInformation("Dispose the bot");
+
         botClient.OnMessage -= BotOnMessage;
         botClient.Close().GetAwaiter().GetResult();
         base.Dispose();
@@ -23,6 +27,8 @@ public class Worker(
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        LogInformation("Starting the bot..");
+
         _conversation.AddSystemMessage(@"You are a knowledgeable and resourceful assistant whose primary task 
 is to offer comprehensive, factual, and well-structured information about Dmitry Lukyanov’s career. 
 Provide details about his professional background, roles, achievements, and relevant qualifications in a clear, 
@@ -32,24 +38,25 @@ If the question asks about any details that are not mentioned in his CV, please 
 
         var me = await botClient.GetMe(stoppingToken);
 
-        logger.LogInformation($"Bot Id: {me.Id}, Bot Name: {me.FirstName}");
+        LogInformation($"Bot Id: {me.Id}, Bot Name: {me.FirstName}");
         botClient.OnMessage += BotOnMessage;
-        logger.LogInformation("Telegram Bot started.");
+        LogInformation("Telegram Bot started.");
 
         await initializer.Initialize();
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            logger.LogInformation("Worker running at: {time}", DateTimeOffset.UtcNow);
-            logger.LogWarning("Worker running at: {time}!", DateTimeOffset.UtcNow);
+            LogInformation($"Worker running at: {DateTimeOffset.UtcNow}");
             await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
         }
 
-        logger.LogInformation("Telegram Bot stopped.");
+        LogInformation("Telegram Bot stopped.");
     }
 
     private async Task BotOnMessage(Message message, UpdateType type)
     {
+        LogInformation($"Handling message: {message.Text}. Message Id: {message.Id}. Message type: {type}");
+
         // TODO: refactoring
         var inputTextMessage = message.Text;
         if (message.Voice != null)
@@ -63,15 +70,31 @@ If the question asks about any details that are not mentioned in his CV, please 
         if (!string.IsNullOrEmpty(message.Text) && (inputTextMessage!.StartsWith("@ai_bot") || (inputTextMessage!.Contains("letsthinkaboutbotnameagain_bot"))) || message.Voice != null)
         {
             _conversation.AddUserMessage(inputTextMessage! /*, message.Id.ToString()*/);
-            var response = await aiApiClient.GetChatCompletion(_conversation);
+            string response;
+            try
+            {
+                response = await aiApiClient.GetChatCompletion(_conversation);
+            }
+            catch (Exception ex)
+            {
+                LogError(ex, ex.Message);
+                throw;
+            }
 
             if (!string.IsNullOrEmpty(response))
             {
+                LogInformation($"Sending message to client: {message.Text}. Message Id: {message.Id}. Message type: {type}");
                 _conversation.AddAssistantMessage(response);
                 await botClient.SendMessage(
                     chatId: message.Chat.Id,
                     text: response);
+                LogInformation($"Sent message to client: {message.Text}. Message Id: {message.Id}. Message type: {type}");
             }
         }
+
+        LogInformation($"Handled message: {message.Text}. Message Id: {message.Id}. Message type: {type}");
     }
+
+    private void LogInformation(string message) => logger.LogInformation("Worker Id: {0}. {1}", _workerId, message);
+    private void LogError(Exception ex, string message) => logger.LogError(ex, "Worker Id: {0}. {1}", _workerId, message);
 }

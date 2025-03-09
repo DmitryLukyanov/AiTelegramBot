@@ -1,4 +1,5 @@
-﻿using Microsoft.SemanticKernel;
+﻿using Azure.Monitor.OpenTelemetry.AspNetCore;
+using Microsoft.SemanticKernel;
 
 namespace TelegramBot
 {
@@ -6,6 +7,7 @@ namespace TelegramBot
     {
         public static void Configure(IHostApplicationBuilder builder)
         {
+            builder.Services.AddOpenTelemetry().UseAzureMonitor();
             builder.Services.AddLogging(logging =>
             {
                 logging.AddConsole();
