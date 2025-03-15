@@ -6,6 +6,7 @@ using Microsoft.SemanticKernel.ChatCompletion;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using TelegramBot.Extensions;
 
 public class Worker(
     ILogger<Worker> logger,
@@ -16,7 +17,7 @@ public class Worker(
 {
     private readonly ChatHistory _conversation = [];
     private readonly Guid _workerId = Guid.NewGuid();
-    private readonly string[] _botNames = ["letsthinkaboutbotnameagain_bot", "ai_bot"];
+    private readonly string[] _botNames = ["@letsthinkaboutbotnameagain_bot", "@ai_bot"];
 
     public override void Dispose()
     {
@@ -31,12 +32,7 @@ public class Worker(
     {
         LogInformation("Starting the bot..");
 
-        _conversation.AddSystemMessage(@"You are a knowledgeable and resourceful assistant whose primary task 
-is to offer comprehensive, factual, and well-structured information about Dmitry Lukyanov’s career. 
-Provide details about his professional background, roles, achievements, and relevant qualifications in a clear, 
-concise manner. Focus on verifiable information and reliable sources while avoiding speculation or personal opinions. Please do not add anything other than mentioned in the CV.
-
-If the question asks about any details that are not mentioned in his CV, please response with this link https://i.gifer.com/EgFH.mp4 without any other text");
+        _conversation.AddSystemMessageFromFile("./Prompts/System/Content.txt");
 
         var me = await botClient.GetMe(stoppingToken);
 
