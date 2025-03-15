@@ -38,7 +38,7 @@ namespace AiConnector.SemanticKernel.MongoDb
             var collectionsList = await (await database.ListCollectionNamesAsync(cancellationToken: cancellationToken)).ToListAsync(cancellationToken: cancellationToken);
             if (collectionsList.Contains(collectionName, StringComparer.OrdinalIgnoreCase))
             {
-                return (await database.GetCollection<BsonDocument>(collectionName).FindAsync($@"{{ _id: {{ $regex: '^{path}' }} }}")).FirstOrDefault() != null;
+                return (await database.GetCollection<BsonDocument>(collectionName).FindAsync($@"{{ _id: {{ $regex: '^{path}' }} }}", cancellationToken: cancellationToken)).FirstOrDefault(cancellationToken: cancellationToken) != null;
             }
             await database.CreateCollectionAsync(collectionName, cancellationToken: cancellationToken);
             return false;

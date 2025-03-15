@@ -81,10 +81,9 @@ If the question asks about any details that are not mentioned in his CV, please 
             {
                 TimeSpan llmTimeout = TimeSpan.FromSeconds(30);
                 Task<string> actionTask;
-                Task delayTask;
                 var resultTask = Task.WhenAny(
                     (actionTask = aiApiClient.GetChatCompletion(_conversation)),
-                    (delayTask = Task.Delay(llmTimeout)));
+                    (Task.Delay(llmTimeout)));
                 while (!resultTask.IsCompleted)
                 {
                     await botClient.SendChatAction(message.Chat.Id, ChatAction.Typing);
