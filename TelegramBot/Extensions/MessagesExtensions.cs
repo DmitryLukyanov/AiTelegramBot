@@ -5,14 +5,17 @@ namespace TelegramBot.Extensions
     internal static class MessagesExtensions
     {
         // TODO: find a built-in approach
-        public static void AddSystemMessageFromFile(this ChatHistory chatHistory, string filePath)
+        public static void AddSystemMessagesFromDirectory(this ChatHistory chatHistory, string directoryPath)
         {
-            if (!File.Exists(filePath))
+            if (!Directory.Exists(directoryPath))
             {
-                throw new FileNotFoundException(filePath);
+                throw new DirectoryNotFoundException(directoryPath);
             }
-            var message = File.ReadAllText(filePath);
-            chatHistory.AddSystemMessage(message);
+            foreach (var file in Directory.EnumerateFiles(directoryPath))
+            {
+                var message = File.ReadAllText(file);
+                chatHistory.AddSystemMessage(message);
+            }
         }
     }
 }

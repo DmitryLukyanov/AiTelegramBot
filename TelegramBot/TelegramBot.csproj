@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -12,14 +12,10 @@
   </ItemGroup>
     
   <ItemGroup>
-    <None Remove="Prompts\System\Content.txt" />
     <None Remove="Storage\cv.pdf" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Prompts\System\Content.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Storage\cv.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

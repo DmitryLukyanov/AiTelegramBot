@@ -32,7 +32,7 @@ public class Worker(
     {
         LogInformation("Starting the bot..");
 
-        _conversation.AddSystemMessageFromFile("./Prompts/System/Content.txt");
+        _conversation.AddSystemMessagesFromDirectory("./Prompts/System");
 
         var me = await botClient.GetMe(stoppingToken);
 
