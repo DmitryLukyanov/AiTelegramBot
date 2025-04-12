@@ -10,16 +10,6 @@
     <PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.4" />
   </ItemGroup>
-    
-  <ItemGroup>
-    <None Remove="Storage\cv.pdf" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Storage\cv.pdf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
 
   <!--Consider: https://dev.to/asimmon/modern-minimal-workers-in-net-2o5a?comments_sort=top-->
   <ItemGroup>
@@ -28,12 +18,12 @@
     <PackageReference Include="Microsoft.Extensions.Logging.AzureAppServices" Version="9.0.4" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.2" />
     <PackageReference Include="Telegram.Bot" Version="22.5.0" />
-    <PackageReference Include="Microsoft.KernelMemory.Core" Version="0.98.250324.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\AiConnector.SemanticKernel.Mongodb\AiConnector.SemanticKernel.Mongodb.csproj" />
     <ProjectReference Include="..\AiConnector.SemanticKernel.OpenAi\AiConnector.SemanticKernel.OpenAi.csproj" />
+    <ProjectReference Include="..\Plugins\MyCvPlugin\MyCvPlugin.csproj" />
   </ItemGroup>
 
 </Project>

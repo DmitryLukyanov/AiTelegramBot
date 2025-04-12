@@ -1,9 +1,11 @@
 ﻿using AiConnector.SemanticKernel.MongoDb;
+using Microsoft.Extensions.Logging;
 using Microsoft.KernelMemory.DataFormats.Pdf;
 using Microsoft.SemanticKernel;
 using System.ComponentModel;
+using System.Reflection;
 
-namespace TelegramBot
+namespace MyCvPlugin
 {
     public sealed class MyCvPlugin(
         IMemoryClient memoryClient,
@@ -12,7 +14,7 @@ namespace TelegramBot
     {
         private const string FunctionName = "CvProvider";
         private readonly MemoryCollection _memoryCollection = new("embedding", "myCvMemory");
-        private readonly string _pathToCv = "./Storage/cv.pdf";
+        private readonly string _pathToCv = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly()!.Location)!, "Storage/cv.pdf");
         private readonly IPromptTemplateFactory _promptTemplateFactory = new KernelPromptTemplateFactory();
         private readonly Guid _pluginId = Guid.NewGuid();
 

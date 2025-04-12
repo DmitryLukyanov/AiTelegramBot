@@ -12,7 +12,7 @@ public class Worker(
     ILogger<Worker> logger,
     IAiApiClient<ChatHistory> aiApiClient,
     TelegramBotClient botClient,
-    AiBotInitializer initializer,
+    IPluginInitialize initializer,
     HistoryHelper historyHelper) : BackgroundService
 {
     private readonly ChatHistory _conversation = [];
@@ -32,7 +32,10 @@ public class Worker(
     {
         LogInformation("Starting the bot..");
 
-        _conversation.AddSystemMessagesFromDirectory("./Prompts/System");
+        if (!string.IsNullOrWhiteSpace(initializer.PromptsPath))
+        {
+            _conversation.AddSystemMessagesFromDirectory(initializer.PromptsPath);
+        }
 
         var me = await botClient.GetMe(stoppingToken);
 
