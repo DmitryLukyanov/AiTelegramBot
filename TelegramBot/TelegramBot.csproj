@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.4" />
   </ItemGroup>
     
   <ItemGroup>
@@ -23,12 +23,12 @@
 
   <!--Consider: https://dev.to/asimmon/modern-minimal-workers-in-net-2o5a?comments_sort=top-->
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.AzureAppServices" Version="9.0.2" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
-    <PackageReference Include="Telegram.Bot" Version="22.3.0" />
-    <PackageReference Include="Microsoft.KernelMemory.Core" Version="0.96.250120.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.4" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.4" />
+    <PackageReference Include="Microsoft.Extensions.Logging.AzureAppServices" Version="9.0.4" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.2" />
+    <PackageReference Include="Telegram.Bot" Version="22.5.0" />
+    <PackageReference Include="Microsoft.KernelMemory.Core" Version="0.98.250324.1" />
   </ItemGroup>
 
   <ItemGroup>
