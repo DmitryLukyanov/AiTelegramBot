@@ -11,12 +11,14 @@ namespace QuizBotPlugin
         public static void ConfigureServices(IHostApplicationBuilder builder)
         {
             builder.Services.AddSingleton<QuizBotPlugin>();
+            builder.Services.AddSingleton<HistoryPlugin>();
             builder.Services.AddSingleton<IPluginInitialize, QuizBotInitializer>();
         }
 
         public static void InitializeKernel(Kernel kernel, IServiceProvider services)
         {
             kernel.Plugins.AddFromType<QuizBotPlugin>("QuizBot", services);
+            kernel.Plugins.AddFromType<HistoryPlugin>("History", services);
         }
     }
 

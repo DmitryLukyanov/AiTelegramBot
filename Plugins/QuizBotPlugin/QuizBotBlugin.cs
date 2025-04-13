@@ -11,11 +11,12 @@ namespace QuizBotPlugin
         Kernel kernel,
         ILogger<QuizBotPlugin> logger)
     {
-        private const string FunctionName = "QuizBotPlugin";
+        private const string QuizBotFunctionName = "QuizBotPlugin";
+        private const string GetHistoryFunctionName = "GetHistoryPlugin";
         private readonly IPromptTemplateFactory _promptTemplateFactory = new KernelPromptTemplateFactory();
         private readonly Guid _pluginId = Guid.NewGuid();
 
-        [KernelFunction(FunctionName), Description("Get information about current and upcomming quiz games.")]
+        [KernelFunction(QuizBotFunctionName), Description("Get information about current and upcomming quiz games.")]
         [return: Description(@"The list of current and upcoming quiz games in a format:
 * Title - the quiz game title,
 * Date - the date when quiz game is scheduled,
@@ -23,9 +24,9 @@ namespace QuizBotPlugin
 * Location - the location where the game scheduled
 * Description - the description of the game
 ")]
-        public async Task<IEnumerable<QuizGameInfo>> GetAsync(KernelArguments arguments)
+        public async Task<IEnumerable<QuizGameInfo>> GetQuizGamesAsync(KernelArguments arguments)
         {
-            LogInformation($"{FunctionName} is being called");
+            LogInformation($"{QuizBotFunctionName} is being called");
 
             var prompt = @"Provide all information about current and upcoming quiz games";
 
@@ -41,7 +42,7 @@ namespace QuizBotPlugin
                 throw;
             }
 
-            LogInformation($"{FunctionName} has been successfully called");
+            LogInformation($"{QuizBotFunctionName} has been successfully called");
 
             return results;
         }
@@ -49,7 +50,7 @@ namespace QuizBotPlugin
         private void LogInformation(string message) => logger.LogInformation("Plugin Id: {0}. {1}", _pluginId, message);
         private void LogError(string message, Exception? ex = null) => logger.LogError(ex, "Plugin Id: {0}. {1}", _pluginId, message);
 
-        private async Task<List<QuizGameInfo>> GetQuizGamesRelatedDetails()
+        public static async Task<List<QuizGameInfo>> GetQuizGamesRelatedDetails()
         {
             var url = "https://quizplease.ru/schedule";
             using var httpClient = new HttpClient();

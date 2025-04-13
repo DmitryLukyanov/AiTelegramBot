@@ -10,16 +10,57 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using TelegramBot.Extensions;
 
-public class Worker(
-    ILogger<Worker> logger,
-    IAiApiClient<ChatHistory> aiApiClient,
-    TelegramBotClient botClient,
-    IPluginInitialize initializer,
-    HistoryHelper historyHelper) : BackgroundService
+public class Worker : BackgroundService
 {
-    private readonly ChatHistory _conversation = [];
+    private const int MinChatHistorySize = 50;
+    private const int MaxLettersCount = 1000;
+    private readonly IChatHistoryReducer _reducer = new ChatHistoryTruncationReducer(targetCount: MinChatHistorySize, thresholdCount: 50);
+    private readonly WeeklyTimer _weeklyTimer;
+
+    private ChatHistory _conversation = [];
     private readonly Guid _workerId = Guid.NewGuid();
-    private readonly string[] _botNames = ["@letsthinkaboutbotnameagain_bot", "@ai_bot"];
+    private readonly string[] _botNames = ["@letsthinkaboutbotnameagain_bot", "@ai_bot", "aibot"];
+    private readonly ILogger<Worker> logger;
+    private readonly IAiApiClient<ChatHistory> aiApiClient;
+    private readonly TelegramBotClient botClient;
+    private readonly IPluginInitialize initializer;
+    private readonly HistoryHelper historyHelper;
+
+    // TODO: find a better approach
+    private long? _chatId;
+
+    public Worker(
+        ILogger<Worker> logger,
+        IAiApiClient<ChatHistory> aiApiClient,
+        TelegramBotClient botClient,
+        IPluginInitialize initializer,
+        HistoryHelper historyHelper)
+    {
+        this.logger = logger;
+        this.aiApiClient = aiApiClient;
+        this.botClient = botClient;
+        this.initializer = initializer;
+        this.historyHelper = historyHelper;
+        this._weeklyTimer = new WeeklyTimer(
+            async () => 
+            {
+                if (_chatId.HasValue)
+                {
+                    await this.botClient.SendMessage(
+                        _chatId.Value,
+                        "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExODM4YzR5ZGhtaXRxZ2VlNnd6a3p0b2pucHRmaXNsaGsxeHJzc3FhbiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/MbnRuf09tjxvk0iIZo/giphy.gif");
+
+                    var upcomingGame = (await QuizBotPlugin.QuizBotPlugin.GetQuizGamesRelatedDetails()).OrderByDescending(i => i.Date).FirstOrDefault();
+                    if (upcomingGame != null)
+                    {
+                        await this.botClient.SendPoll(_chatId.Value!, upcomingGame.Title!, ["Yes !", "Not Yes"]);
+                    }
+                }
+            },
+            timeOfDay: TimeSpan.FromHours(2),
+            DayOfWeek.Monday);
+
+    }
 
     public override void Dispose()
     {
@@ -69,8 +110,16 @@ public class Worker(
         bool saveOutputToConversation = true;
         var inputTextMessage = message.Text;
 
+        _chatId = message.Chat.Id; // supposed that the chat is a single, TODO: find a better approach
+
         if (message.Voice != null)
         {
+            if (message.Voice.FileSize > 1048576 /* 1 mb*/)
+            {
+                await botClient.SendMessage(message.Chat.Id, "https://vgif.ru/gifs/133/vgif-ru-13169.gif");
+                return;
+            }
+
             await botClient.SendChatAction(message.Chat.Id, ChatAction.UploadVoice);
             var file = await botClient.GetFile(message.Voice.FileId!);
             using var destination = new MemoryStream();
@@ -82,8 +131,14 @@ public class Worker(
 
         _conversation.AddSystemMessage(@$"The current telegram ""chat id"" (also can be called as ""chat id"" is {message.Chat.Id})");
 
-        if (botInvolved || message.Voice != null)
+        if (botInvolved)
         {
+            if (inputTextMessage!.Length > MaxLettersCount)
+            {
+                await botClient.SendMessage(message.Chat.Id, "https://media.tenor.com/9vFIpZJPVPwAAAAM/she-talk-too-much-mo%27nique.gif");
+                return;
+            }
+
             var enrichedMessage = @$"{inputTextMessage}.
 The user name: {message.Chat.Username}
 The chat Id: {message.Chat.Id}";
@@ -91,7 +146,7 @@ The chat Id: {message.Chat.Id}";
             string response;
             try
             {
-                TimeSpan llmTimeout = TimeSpan.FromSeconds(30);
+                TimeSpan llmTimeout = TimeSpan.FromSeconds(60);
                 Task<string> actionTask;
                 using CancellationTokenSource cts = new CancellationTokenSource();
                 var resultTask = Task.WhenAny(
@@ -135,13 +190,18 @@ The chat Id: {message.Chat.Id}";
             }
         }
 
+        if (_conversation.Count >= MinChatHistorySize)
+        {
+            _conversation = new ChatHistory(messages: (await _reducer!.ReduceAsync(_conversation))!);
+        }
+
         LogInformation($"Handled message: {message.Text}. Message Id: {message.Id}. Message type: {type}");
 
         async Task SaveHistory(string userName, string text, DateTime date, bool botInvolved)
         {
             try
             {
-                await historyHelper.SaveHistory(userName, text, date, botInvolved);
+                await historyHelper.SaveHistory(message.Id, message.Chat.Id, userName, text, date, botInvolved);
             }
             catch (Exception ex)
             {

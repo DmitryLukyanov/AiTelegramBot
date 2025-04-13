@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Embeddings;
 using MongoDB.Driver;
 #pragma warning disable SKEXP0020 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
@@ -18,11 +19,11 @@ namespace AiConnector.SemanticKernel.MongoDb
             builder.Services.AddSingleton<IMemoryClient, MemoryClient>(sr => 
             {
                 var mongoClient = sr.GetRequiredService<IMongoClient>();
+                var kernel = sr.GetRequiredService<Kernel>();
                 var embedding = sr.GetRequiredService<ITextEmbeddingGenerationService>();
-                return new MemoryClient(mongoClient, embedding);
+                return new MemoryClient(mongoClient, kernel, embedding);
             });
             builder.Services.AddSingleton<HistoryHelper>();
-
             ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
             {
                 builder.AddDebug();

@@ -1,4 +1,5 @@
-﻿using Microsoft.SemanticKernel.Connectors.MongoDB;
+﻿using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.Connectors.MongoDB;
 using Microsoft.SemanticKernel.Embeddings;
 using Microsoft.SemanticKernel.Memory;
 using MongoDB.Bson;
@@ -11,10 +12,10 @@ namespace AiConnector.SemanticKernel.MongoDb
     {
         Task<bool> TryInitializeCollection(string collectionName, string path, CancellationToken cancellationToken = default);
         Task Save(MemoryCollection collection, string text, string id, string? description = null, string? metadata = null, CancellationToken cancellationToken = default);
-        Task<string[]> Search(MemoryCollection collection, string query, int limit = 1, double minRelevanceScore = 0, CancellationToken cancellationToken = default);
+        Task<IEnumerable<MemoryRecordMetadata>> Search(MemoryCollection collection, string query, int limit = 30, double minRelevanceScore = 0, CancellationToken cancellationToken = default);
     }
 
-    public class MemoryClient(IMongoClient memoryClient, ITextEmbeddingGenerationService textEmbeddingGenerationService) : IMemoryClient
+    public class MemoryClient(IMongoClient memoryClient, Kernel kernel, ITextEmbeddingGenerationService textEmbeddingGenerationService) : IMemoryClient
     {
         private const string EmbeddingDatabase = "embedding";
 
@@ -52,13 +53,24 @@ namespace AiConnector.SemanticKernel.MongoDb
         }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public async Task<string[]> Search(MemoryCollection collection, string query, int limit = 1, double minRelevanceScore = 0, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<MemoryRecordMetadata>> Search(
+            MemoryCollection collection, 
+            string query,
+            int limit = 20,
+            double minRelevanceScore = 0.85, 
+            CancellationToken cancellationToken = default)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             var chromaMemoryStore = new MongoDBMemoryStore(memoryClient, collection.DatabaseName, collection.Index);
             var memory = new SemanticTextMemory(chromaMemoryStore, textEmbeddingGenerationService);
-            var enumerable = memory.SearchAsync(collection.CollectionName, query, limit, minRelevanceScore, cancellationToken: cancellationToken);
-            return (await enumerable.ToListAsync(cancellationToken: cancellationToken)).Select(r => r.Metadata.Text).ToArray();
+            var enumerable = memory.SearchAsync(
+                collection.CollectionName,
+                query,
+                limit,
+                minRelevanceScore: minRelevanceScore,
+                kernel: kernel,
+                cancellationToken: cancellationToken);
+            return (await enumerable.ToListAsync(cancellationToken: cancellationToken)).Select(i => i.Metadata).ToList();
         }
     }
 }

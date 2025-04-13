@@ -1,22 +1,58 @@
-﻿using MongoDB.Bson;
-using MongoDB.Driver;
+﻿using AiConnector.SemanticKernel.MongoDb;
 
 namespace AiConnector.SemanticKernel.Mongodb.History
 {
-    public class HistoryHelper(IMongoClient mongoClient)
+    public class HistoryHelper(IMemoryClient memoryClient)
     {
-        private readonly string _database = "metadata";
-        private readonly string _history = "history";
+        private static readonly string _database = "embedding"; // TODO: replace on metadata once the index is created
+        private static readonly string _history = "myCvMemory"; // TODO: replace on history once the index is created
+        private readonly MemoryCollection _memoryCollection = new MemoryCollection(_database, _history);
 
-        public async Task SaveHistory(string user, string text, DateTime dateTime, bool botInvolved)
+        public async Task SaveHistory(
+            long messageId,
+            long chatId,
+            string user,
+            string text,
+            DateTime dateTime,
+            bool botInvolved,
+            CancellationToken cancellationToken = default)
         {
-            var database = mongoClient.GetDatabase(_database);
-            await database.CreateCollectionAsync(_history, new CreateCollectionOptions { Capped = true, MaxDocuments = 5000, MaxSize = 10000 });
-            var collection = database.GetCollection<BsonDocument>(_history);
-            await collection.InsertOneAsync(BsonDocument.Parse(@$"{{ text : '{
-                text
-                    .Replace(":", @"""")
-                    .Replace("'", @"""")}', user : '{user}', created : '{dateTime}', bot_involved : '{botInvolved}' }}"));
+            Dictionary<string, object> metadata = new()
+            {
+                { "type", "text" },
+                { "tags", new List<string>() { "telegram_bot" } },
+                { "chatId", chatId.ToString() },
+                { "author", user }
+            };
+            var additionalMetadata = System.Text.Json.JsonSerializer.Serialize(metadata);
+
+            await memoryClient.Save(
+                _memoryCollection,
+                text: text,
+                id: messageId.ToString(),
+                description: $"{text}. Context: {additionalMetadata}",
+                metadata: additionalMetadata,
+                cancellationToken);
         }
+
+        public async Task<IEnumerable<HistoryRecord>> GetHistory(
+            string query,
+            CancellationToken cancellationToken = default)
+        {
+            var result = await memoryClient.Search(
+                _memoryCollection,
+                query: query,
+                limit: 30,
+                cancellationToken: cancellationToken);
+            return result
+                .Select(i => 
+                {
+                    var metadata = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, object>>(i.AdditionalMetadata);
+                    return new HistoryRecord(i.Text, i.Description, metadata!["author"]!.ToString()!, metadata!["chatId"]!.ToString()!);
+                })
+                .ToList();
+        }
+
+        public record HistoryRecord(string Text, string Description, string UserName, string ChatId);
     }
 }
