@@ -13,7 +13,10 @@ namespace AiConnector.SemanticKernel.Mongodb.History
             var database = mongoClient.GetDatabase(_database);
             await database.CreateCollectionAsync(_history, new CreateCollectionOptions { Capped = true, MaxDocuments = 5000, MaxSize = 10000 });
             var collection = database.GetCollection<BsonDocument>(_history);
-            await collection.InsertOneAsync(BsonDocument.Parse(@$"{{ text : '{text}', user : '{user}', created : '{dateTime}', bot_involved : '{botInvolved}' }}"));
+            await collection.InsertOneAsync(BsonDocument.Parse(@$"{{ text : '{
+                text
+                    .Replace(":", @"""")
+                    .Replace("'", @"""")}', user : '{user}', created : '{dateTime}', bot_involved : '{botInvolved}' }}"));
         }
     }
 }

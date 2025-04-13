@@ -23,7 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AiConnector.SemanticKernel.Mongodb\AiConnector.SemanticKernel.Mongodb.csproj" />
     <ProjectReference Include="..\AiConnector.SemanticKernel.OpenAi\AiConnector.SemanticKernel.OpenAi.csproj" />
-    <ProjectReference Include="..\Plugins\MyCvPlugin\MyCvPlugin.csproj" />
+    <ProjectReference Include="..\Plugins\QuizBotPlugin\QuizBotPlugin.csproj" />
   </ItemGroup>
 
 </Project>

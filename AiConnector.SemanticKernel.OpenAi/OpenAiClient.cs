@@ -9,7 +9,7 @@ namespace AiConnector.SemanticKernel.OpenAi
     public class OpenAiClient(IChatCompletionService chatCompletionService, IAudioToTextService audioToTextService, Kernel kernel) : IAiApiClient<ChatHistory>
 #pragma warning restore SKEXP0001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
     {
-        public async Task<string> GetChatCompletion(ChatHistory chatConversation)
+        public async Task<string> GetChatCompletion(ChatHistory chatConversation, CancellationToken cancellationToken)
         {
             try
             {
@@ -17,9 +17,10 @@ namespace AiConnector.SemanticKernel.OpenAi
                     chatHistory: chatConversation,
                     new PromptExecutionSettings
                     {
-                        FunctionChoiceBehavior = FunctionChoiceBehavior.Auto()
+                        FunctionChoiceBehavior = FunctionChoiceBehavior.Auto(),
                     }, 
-                    kernel);
+                    kernel,
+                    cancellationToken);
                 return content.ToString();
             }
             catch (Exception ex)
@@ -28,14 +29,14 @@ namespace AiConnector.SemanticKernel.OpenAi
             }
         }
 
-        public async Task<string> GetTextFromAudio(MemoryStream voice, string language, string promt)
+        public async Task<string> GetTextFromAudio(MemoryStream voice, string language, string prompt)
         {
             // Set execution settings (optional)
 #pragma warning disable SKEXP0010 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
             OpenAIAudioToTextExecutionSettings executionSettings = new()
             {
                 Language = language, // The language of the audio data as two-letter ISO-639-1 language code (e.g. 'en' or 'es').
-                Prompt = promt, // An optional text to guide the model's style or continue a previous audio segment.
+                Prompt = prompt, // An optional text to guide the model's style or continue a previous audio segment.
                                           // The prompt should match the audio language.
                 ResponseFormat = "json", // The format to return the transcribed text in.
                                          // Supported formats are json, text, srt, verbose_json, or vtt. Default is 'json'.

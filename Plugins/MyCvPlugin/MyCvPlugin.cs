@@ -53,7 +53,7 @@ namespace MyCvPlugin
         [KernelFunction(FunctionName), Description("Get information about Dmitry Lukyanov's from my cv.")]
         public async Task<string> GetAsync(KernelArguments arguments)
         {
-            LogInformation("MyCvPlugin is being called");
+            LogInformation($"{FunctionName} is being called");
 
             var prompt = @"Provide all information from the cv";
 
@@ -69,7 +69,7 @@ namespace MyCvPlugin
                 throw;
             }
 
-            LogInformation("MyCvPlugin has been successfully called");
+            LogInformation($"{FunctionName} has been successfully called");
 
             return string.Join('\n', results);
         }
